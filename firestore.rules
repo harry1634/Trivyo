@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Public read-only catalog data. Writes go through the backend (admin SDK),
+    // which bypasses these rules, so admin writes here are just a safety net.
+    match /destinations/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /places/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Users can only manage their own profile; role can't be self-escalated.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && request.resource.data.role == 'traveler';
+      allow update: if isOwner(userId) && request.resource.data.role == resource.data.role;
+      allow delete: if isAdmin();
+    }
+
+    match /trips/{tripId} {
+      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /itineraries/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /favorites/{id} {
+      allow read, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /checklists/{id} {
+      allow read, write: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /reviews/{id} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /notifications/{id} {
+      allow read, write: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}
