@@ -146,14 +146,6 @@ export default function Home() {
               <p className="text-xs font-medium text-success">Perfect for you</p>
             </div>
 
-            {/* Sits in the gradient's mid transition zone — just past the text
-                column, before the photo's busy palm/resort detail on the right —
-                instead of stacked on top of that detail or near the planner. */}
-            <img
-              src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500"
-              alt="Mountain lake getaway"
-              className="absolute left-[600px] top-1/2 hidden h-[110px] w-[165px] -translate-y-1/2 rounded-2xl object-cover shadow-lg ring-4 ring-white lg:block xl:left-[650px]"
-            />
           </div>
 
           {/* Mobile-only: the photo becomes its own block after the text,
