@@ -14,7 +14,7 @@ export async function requireAuth(req, res, next) {
     next();
   } catch (err) {
     console.error('Token verification failed:', err.code || err.message);
-    next(new ApiError(401, `Invalid or expired session (${err.code || err.message})`));
+    next(new ApiError(401, `Invalid or expired session (${err.code}: ${String(err.message).slice(0, 220)})`));
   }
 }
 
