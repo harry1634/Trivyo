@@ -27,7 +27,7 @@ export default function Register() {
       showToast('Account created! Welcome to Trivyo.', 'success');
       navigate('/dashboard');
     } catch (err) {
-      setError(err.code === 'auth/email-already-in-use' ? 'An account with this email already exists.' : 'Could not create your account. Please try again.');
+      setError(err.code === 'auth/email-already-in-use' ? 'An account with this email already exists.' : `Could not create your account (${err.code || err.message}). Please try again.`);
     } finally {
       setLoading(false);
     }
