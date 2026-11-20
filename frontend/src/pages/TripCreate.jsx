@@ -87,7 +87,7 @@ export default function TripCreate() {
       showToast('Trip created! Finding your recommendations...', 'success');
       navigate(`/trips/${tripRes.data.id}/recommendations`);
     } catch (err) {
-      showToast('Could not create trip. Please try again.', 'error');
+      showToast(`Could not create trip: ${err.response?.data?.error || err.message}`, 'error');
     }
   }
 
