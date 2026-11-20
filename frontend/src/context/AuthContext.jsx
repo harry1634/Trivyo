@@ -22,13 +22,20 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
-      if (firebaseUser) {
-        const snap = await getDoc(doc(db, 'users', firebaseUser.uid));
-        setProfile(snap.exists() ? snap.data() : null);
-      } else {
+      try {
+        if (firebaseUser) {
+          const snap = await getDoc(doc(db, 'users', firebaseUser.uid));
+          setProfile(snap.exists() ? snap.data() : null);
+        } else {
+          setProfile(null);
+        }
+      } catch (err) {
+        // Don't leave the app stuck on a blank screen if Firestore is unreachable.
+        console.error('Could not load user profile:', err);
         setProfile(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
