@@ -26,7 +26,7 @@ export default function TripCreate() {
   const [form, setForm] = useState({
     destinationId: state?.destinationId || '',
     startDate: state?.startDate || '',
-    endDate: '',
+    endDate: state?.endDate || '',
     travelers: Number(state?.travelers) || 2,
     groupType: 'couple',
     budget: Number(state?.budget) || 20000,

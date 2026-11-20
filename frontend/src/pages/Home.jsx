@@ -28,6 +28,15 @@ const STATS = [
 
 const TRAVELER_OPTIONS = [1, 2, 3, 4, 5, 6];
 
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+function toISODate(d) {
+  return d.toISOString().slice(0, 10);
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const scrollerRef = useRef(null);
@@ -65,7 +74,23 @@ export default function Home() {
 
   function handlePlanTrip(e) {
     e.preventDefault();
-    navigate('/trips/new', { state: search });
+    // Empty fields fall back to demo-friendly defaults (Goa, a 3-day trip
+    // two weeks out, Rs 30,000) so a single click shows the engine working.
+    const typed = search.destination.trim().toLowerCase();
+    const match = typed
+      ? destinations.find((d) => d.id === typed || d.name.toLowerCase() === typed)
+        || destinations.find((d) => d.name.toLowerCase().includes(typed))
+      : destinations.find((d) => d.id === 'goa');
+    const startDate = search.startDate || toISODate(addDays(new Date(), 14));
+    navigate('/trips/new', {
+      state: {
+        destinationId: match?.id || '',
+        startDate,
+        endDate: toISODate(addDays(new Date(startDate), 2)),
+        travelers: search.travelers,
+        budget: search.budget || 30000,
+      },
+    });
   }
 
   function scrollDestinations(direction) {
@@ -170,7 +195,7 @@ export default function Home() {
           <div className="relative z-10 mx-auto mt-16 flex justify-center lg:mt-20 lg:max-w-[1160px]">
             <form
               onSubmit={handlePlanTrip}
-              className="grid w-full grid-cols-1 gap-5 rounded-[20px] border border-[#E7E5E4] bg-white p-5 shadow-[0_12px_32px_-16px_rgba(23,32,51,0.18)] sm:grid-cols-4 sm:gap-4 sm:p-5"
+              className="grid w-full grid-cols-1 gap-5 rounded-[20px] border border-[#E7E5E4] bg-white p-5 shadow-[0_12px_32px_-16px_rgba(23,32,51,0.18)] sm:grid-cols-2 sm:gap-4 sm:p-5 lg:grid-cols-4"
             >
               <label className="block">
                 <span className="mb-1.5 block text-sm font-semibold text-[#172033]">Where do you want to go?</span>
@@ -226,11 +251,24 @@ export default function Home() {
                       onChange={(e) => setSearch((s) => ({ ...s, budget: e.target.value }))}
                     />
                   </div>
-                  <Button type="submit" rounded="md" className="h-[48px] shrink-0 px-4"><Search size={16} /></Button>
+                  <Button type="submit" rounded="md" className="h-[48px] shrink-0 gap-1.5 px-4"><Search size={16} /> Plan trip</Button>
                 </div>
               </div>
             </form>
           </div>
+
+          {/* Quick teaser of the product flow, right under the planner. */}
+          <ol className="mx-auto mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-[#64748B] sm:text-sm lg:max-w-[1160px]">
+            {['Tell us where & how much', 'Get ranked recommendations', 'Receive a day-wise itinerary'].map((step, i) => (
+              <li key={step} className="flex items-center gap-3">
+                <span className="flex items-center gap-1.5">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">{i + 1}</span>
+                  {step}
+                </span>
+                {i < 2 && <ChevronRight size={14} className="hidden text-[#D6D3D1] sm:block" />}
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
