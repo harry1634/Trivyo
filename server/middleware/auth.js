@@ -13,7 +13,8 @@ export async function requireAuth(req, res, next) {
     req.user = decoded;
     next();
   } catch (err) {
-    next(new ApiError(401, 'Invalid or expired session'));
+    console.error('Token verification failed:', err.code || err.message);
+    next(new ApiError(401, `Invalid or expired session (${err.code || err.message})`));
   }
 }
 
