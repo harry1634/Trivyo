@@ -32,5 +32,10 @@ app.use('/api/admin', adminRoutes);
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Trivyo server running on port ${PORT}`));
+// On Vercel the app is exported as a serverless handler; locally we listen.
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Trivyo server running on port ${PORT}`));
+}
+
+export default app;

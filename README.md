@@ -77,10 +77,18 @@ meals, checks opening hours, and totals cost/distance per day.
 it swaps low-match/high-cost places for cheaper alternatives first, then
 drops the lowest-value remaining activities if that alone isn't enough.
 
-## Deployment
-- **Frontend:** deploy `frontend/` to Vercel (framework preset: Vite).
-- **Backend:** deploy `server/` to Vercel as a Node serverless app (or any Node host). Set the same env vars as `server/.env.example`.
-- Set `VITE_API_BASE_URL` on the frontend deployment to your deployed backend's `/api` URL.
+## Deployment (Vercel - two projects from this one repo)
+
+**1. Backend** - New Project, import repo, **Root Directory: `server`** (framework: Other).
+Env var: `FIREBASE_SERVICE_ACCOUNT_BASE64`. Check `https://<backend>.vercel.app/api/health`.
+
+**2. Frontend** - New Project, import repo, **Root Directory: `frontend`** (framework: Vite).
+Env vars (all required, then redeploy):
+`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`,
+`VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`,
+and `VITE_API_BASE_URL=https://<backend>.vercel.app/api`.
+
+**3.** Firebase console > Authentication > Settings > Authorized domains: add your frontend `*.vercel.app` domain.
 
 ## Out of scope for V1
 Real booking/payments, flight tracking, live GPS navigation, ML-based

@@ -5,3 +5,10 @@ dist/
 *.log
 .DS_Store
 serviceAccount.json
+.claude/
+.vercel/
+.vscode/
+.idea/
+serviceAccount*.json
+*.local
+*adminsdk*.json
